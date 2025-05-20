@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Логи
+logs
+*.log
+npm-debug.log*
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Експорт середовища
+.env
+
+# Збірки
+dist/
+build/
+
+# Jest
+coverage/
