@@ -1,6 +1,6 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
-import app from '../index'; // або '../app', залежно від експорту
+import app from '../index';
 
 describe('Survey API', () => {
     let createdSurveyId: string;
