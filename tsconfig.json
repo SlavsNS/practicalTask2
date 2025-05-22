@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "resolveJsonModule": true,
     "target": "ES2020",
     "module": "CommonJS",
     "outDir": "./dist",
@@ -8,8 +7,12 @@
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src"]
+  "include": [
+    "src/**/*",
+    "swagger.json"
+  ]
 }

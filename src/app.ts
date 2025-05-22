@@ -3,7 +3,10 @@ import express, { Application } from 'express';
 import { container } from 'tsyringe';
 import { SurveyController } from './controllers/SurveyController';
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocument from './swagger.json';
+import fs from 'fs';
+import path from 'path';
+const swaggerPath = path.join(process.cwd(), 'swagger.json');
+const swaggerDocument = JSON.parse(fs.readFileSync(swaggerPath, 'utf-8'));
 import { json } from 'body-parser';
 import morgan from 'morgan';
 

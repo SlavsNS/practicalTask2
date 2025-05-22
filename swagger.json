@@ -1,0 +1,251 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Survey API",
+    "version": "1.0.0",
+    "description": "API для створення опитувань, надсилання відповідей і перегляду результатів"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Локальний сервер"
+    }
+  ],
+  "paths": {
+    "/surveys": {
+      "get": {
+        "summary": "Отримати всі опитування",
+        "responses": {
+          "200": {
+            "description": "Список опитувань",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Survey" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Створити нове опитування",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Survey" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Опитування створено",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Survey" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/surveys/{id}": {
+      "get": {
+        "summary": "Отримати опитування за ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Унікальний ідентифікатор опитування",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Інформація про опитування",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Survey" }
+              }
+            }
+          },
+          "404": {
+            "description": "Опитування не знайдено",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/surveys/{id}/answers": {
+      "post": {
+        "summary": "Надіслати відповідь на опитування",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID опитування",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AnswerSubmission" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Відповідь надіслано",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          },
+          "400": {
+            "description": "Невірні дані запиту",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/surveys/{id}/results": {
+      "get": {
+        "summary": "Отримати всі відповіді для опитування",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID опитування",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список відповідей",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Response" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Невірний ID опитування",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Survey": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": { "type": "string" },
+                "questionText": { "type": "string" },
+                "type": {
+                  "type": "string",
+                  "enum": ["text", "single-choice", "multiple-choice"]
+                },
+                "options": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "required": ["_id", "questionText", "type"]
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["_id", "title", "questions", "createdAt", "updatedAt"]
+      },
+      "AnswerSubmission": {
+        "type": "object",
+        "properties": {
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "questionId": { "type": "string" },
+                "answer": {
+                  "oneOf": [
+                    { "type": "string" },
+                    { "type": "array", "items": { "type": "string" } }
+                  ]
+                }
+              },
+              "required": ["questionId", "answer"]
+            }
+          }
+        },
+        "required": ["answers"]
+      },
+      "Response": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "surveyId": { "type": "string" },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": { "type": "string" },
+                "questionId": { "type": "string" },
+                "answer": {
+                  "oneOf": [
+                    { "type": "string" },
+                    { "type": "array", "items": { "type": "string" } }
+                  ]
+                }
+              },
+              "required": ["_id", "questionId", "answer"]
+            }
+          },
+          "submittedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["_id", "surveyId", "answers", "submittedAt"]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" }
+        },
+        "required": ["message"]
+      }
+    }
+  }
+}

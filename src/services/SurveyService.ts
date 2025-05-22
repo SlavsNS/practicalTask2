@@ -19,8 +19,15 @@ export class SurveyService {
         return SurveyModel.find().exec();
     }
 
-    async submitResponse(surveyId: string, answers: any[]): Promise<IResponse> {
+    async submitResponse(surveyId: string, answers: { questionId: string; answer: string | string[] }[]): Promise<IResponse> {
         if (!Types.ObjectId.isValid(surveyId)) throw new Error('Invalid survey ID');
+
+        // Перевіряємо, чи існує опитування
+        const surveyExists = await SurveyModel.exists({ _id: surveyId });
+        if (!surveyExists) {
+            throw new Error(`Survey with id ${surveyId} not found`);
+        }
+
         const response = new ResponseModel({
             surveyId,
             answers,
@@ -29,8 +36,8 @@ export class SurveyService {
         return response.save();
     }
 
-    async getResponsesBySurveyId(surveyId: string) {
-        const responses = await ResponseModel.find({surveyId}).lean();
-        return {answers: responses};
+    async getResponsesBySurveyId(surveyId: string): Promise<IResponse[]> {
+        if (!Types.ObjectId.isValid(surveyId)) throw new Error('Invalid survey ID');
+        return ResponseModel.find({ surveyId }).lean();
     }
 }

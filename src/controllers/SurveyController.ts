@@ -56,7 +56,11 @@ export class SurveyController {
     }
 
     async getResponses(req: Request, res: Response) {
-        const responses = await this.surveyService.getResponsesBySurveyId(req.params.id);
-        res.json(responses);
+        try {
+            const responses = await this.surveyService.getResponsesBySurveyId(req.params.id);
+            res.json(responses);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message });
+        }
     }
 }

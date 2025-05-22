@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import app from './app';
-export default app;
 
 dotenv.config();
 
@@ -18,3 +17,4 @@ mongoose.connect(process.env.MONGO_URI || '', {
 }).catch(err => {
     console.error('MongoDB connection error:', err);
 });
+export default app;
